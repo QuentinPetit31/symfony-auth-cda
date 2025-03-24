@@ -10,17 +10,19 @@ use App\Entity\Account;
 use App\Repository\AccountRepository;
 use App\Form\RegisterType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class RegisterController extends AbstractController
 {
     public function __construct(
         private readonly AccountRepository $accountRepository,
-        private readonly EntityManagerInterface $em
+        private readonly EntityManagerInterface $em,
+        private readonly UserPasswordHasherInterface $hasher
     ) {}
 
     #[Route('/register', name: 'app_register_addaccount')]
-    public function addAccount(Request $request, ValidatorInterface $validator): Response
+    public function addAccount(Request $request): Response
     {
         $msg = "";
         $type = "";
@@ -32,27 +34,18 @@ final class RegisterController extends AbstractController
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
-           /*  $errors = $validator->validate($account);
-            //Test si l'entité est valide (validation)
-            if(count($errors) > 0) {
-                $msg = $errors[0]->getMessage();
-                $type = "warning";
-            }  */
-            //Sinon on ajoute en BDD
-            //else{
-                //Test si le compte n'existe pas
-                if(!$this->accountRepository->findOneBy(["email" => $account->getEmail()])) {
-                    $account->setRoles(["ROLE_USER"]);
-                    $this->em->persist($account);
-                    $this->em->flush();
-                    $msg = "Le compte a été ajouté en BDD";
-                    $type = "success";
-                }
-                else {
-                    $msg = "Les informations email et ou password existe déja";
-                    $type = "danger";
-                }
-            //}
+            //Test si le compte n'existe pas
+            if(!$this->accountRepository->findOneBy(["email" => $account->getEmail()])) {
+                $account->setRoles(["ROLE_USER"]);
+                $this->em->persist($account);
+                $this->em->flush();
+                $msg = "Le compte a été ajouté en BDD";
+                $type = "success";
+            }
+            else {
+                $msg = "Les informations email et ou password existe déja";
+                $type = "danger";
+            }
 
             $this->addFlash($type,$msg);
         }

@@ -18,6 +18,12 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(
+        message:"Le mail doit être non vide"
+    )]
+    #[Assert\Email(
+        message: 'L\'email {{ value }} n\'est pas valide.',
+    )]
     private ?string $email = null;
 
     /**
@@ -30,15 +36,36 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Regex(
+        pattern: "/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}/",
+        match: true,
+        message: 'Le mot de passe doit contenir lettres min, maj, nombre et 8 caractères',
+    )]
+    #[Assert\NotCompromisedPassword(
+        message:"Le mot de passe est compromis"
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank(
         message:"Le prénom doit être non vide"
     )]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'le prénom doit faire au minimum {{ limit }} caractères',
+    )]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(
+        message:"Le nom doit être non vide"
+    )]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'le Non doit faire au minimum {{ limit }} caractères',
+    )]
     private ?string $lastname = null;
 
     public function getId(): ?int
