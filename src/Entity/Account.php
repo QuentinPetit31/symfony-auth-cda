@@ -18,12 +18,8 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Assert\NotBlank(
-        message:"Le mail doit être non vide"
-    )]
-    #[Assert\Email(
-        message: 'L\'email {{ value }} n\'est pas valide.',
-    )]
+    #[Assert\NotBlank(message: "Le mail doit être non vide")]
+    #[Assert\Email(message: "L'email {{ value }} n'est pas valide.")]
     private ?string $email = null;
 
     /**
@@ -38,35 +34,31 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\Regex(
         pattern: "/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}/",
-        match: true,
-        message: 'Le mot de passe doit contenir lettres min, maj, nombre et 8 caractères',
+        message: "Le mot de passe doit contenir lettres min, maj, nombre et 8 caractères"
     )]
-    #[Assert\NotCompromisedPassword(
-        message:"Le mot de passe est compromis"
-    )]
+    #[Assert\NotCompromisedPassword(message: "Le mot de passe est compromis")]
     private ?string $password = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(
-        message:"Le prénom doit être non vide"
-    )]
+    #[Assert\NotBlank(message: "Le prénom doit être non vide")]
     #[Assert\Length(
         min: 2,
         max: 50,
-        minMessage: 'le prénom doit faire au minimum {{ limit }} caractères',
+        minMessage: "Le prénom doit faire au minimum {{ limit }} caractères"
     )]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(
-        message:"Le nom doit être non vide"
-    )]
+    #[Assert\NotBlank(message: "Le nom doit être non vide")]
     #[Assert\Length(
         min: 2,
         max: 50,
-        minMessage: 'le Non doit faire au minimum {{ limit }} caractères',
+        minMessage: "Le nom doit faire au minimum {{ limit }} caractères"
     )]
     private ?string $lastname = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $status = false;
 
     public function getId(): ?int
     {
@@ -81,31 +73,21 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
     /**
-     * @see UserInterface
-     *
      * @return list<string>
      */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
@@ -115,13 +97,9 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
@@ -130,17 +108,12 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // Efface les données sensibles temporaires si besoin
     }
 
     public function getFirstname(): ?string
@@ -151,7 +124,6 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFirstname(string $firstname): static
     {
         $this->firstname = $firstname;
-
         return $this;
     }
 
@@ -163,7 +135,17 @@ class Account implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastname(string $lastname): static
     {
         $this->lastname = $lastname;
+        return $this;
+    }
 
+    public function isStatus(): bool
+    {
+        return $this->status;
+    }
+
+    public function setStatus(bool $status): static
+    {
+        $this->status = $status;
         return $this;
     }
 }
